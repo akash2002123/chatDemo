@@ -18,7 +18,8 @@
                 <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control" />
             </div>
             <div class="form-group">
-                <button type="submit" class="accent username-submit">Start Chatting</button>
+                <button type="button" class="reject-button">Reject</button>
+                <button type="submit" class="accept-button">Accept</button>
             </div>
         </form>
     </div>
@@ -49,5 +50,68 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="/js/main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to show notification
+        function showNotification() {
+            if (Notification.permission === 'granted') {
+                const options = {
+                    body: 'Accept or reject to enter the chatroom.',
+                    actions: [
+                        { action: 'accept', title: 'Accept' },
+                        { action: 'reject', title: 'Reject' }
+                    ]
+                };
+                const notification = new Notification('Join Chatroom', options);
+
+                notification.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (event.action === 'accept') {
+                        document.getElementById('username-page').classList.add('hidden');
+                        document.getElementById('chat-page').classList.remove('hidden');
+                    } else if (event.action === 'reject') {
+                        alert('You rejected the chat invitation.');
+                    } else {
+                        // Handle clicks on the notification body
+                        alert('Notification body clicked');
+                    }
+                });
+            } else {
+                alert('Notifications are not enabled. Please enable notifications to use this feature.');
+            }
+        }
+
+        // Request notification permission
+        if ('Notification' in window) {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    showNotification();
+                } else {
+                    alert('Notifications are disabled. Please enable them to join the chat.');
+                }
+            }).catch(function(error) {
+                console.error('Notification permission error:', error);
+            });
+        }
+
+        // Handling form submission
+        document.getElementById('usernameForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            document.getElementById('username-page').classList.add('hidden');
+            document.getElementById('chat-page').classList.remove('hidden');
+        });
+
+        // Handling reject button
+        document.querySelector('.reject-button').addEventListener('click', function() {
+            alert('You rejected the chat invitation.');
+        });
+
+        // Handling accept button
+        document.querySelector('.accept-button').addEventListener('click', function() {
+            document.getElementById('username-page').classList.add('hidden');
+            document.getElementById('chat-page').classList.remove('hidden');
+        });
+    });
+</script>
 </body>
 </html>
